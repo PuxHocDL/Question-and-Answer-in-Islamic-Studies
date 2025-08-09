@@ -1,0 +1,12 @@
+{
+  "models": {
+    "mistral": "N",
+    "fanar_rag": "N",
+    "allam_7b": "N",
+    "gemini": "Y",
+  },
+  "paths": {
+    "input_dir": "../data",
+    "output_dir": "../results/prediction"
+  }
+}

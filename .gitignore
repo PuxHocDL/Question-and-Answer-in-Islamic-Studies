@@ -1,0 +1,16 @@
+*.log
+*.tmp
+.env
+
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+config.json
+
+*.bin 
+*.pkl 
+fatwa_documents.txt 
+results/
+excel/ 
+Data_track2_Word/
+notebooks/
