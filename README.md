@@ -19,18 +19,18 @@ Participants may use prompting, fine-tuning, retrieval-augmented generation (RAG
 
 - Focuses on inheritance-related problems (ʿIlm al-Mawārīth), requiring precise rule-based reasoning aligned with Islamic jurisprudence.
 - Dataset:
-  - 9450 MCQs  (training))
-  - 1500 MCQs (validation)
-  - 1500 MCQs (test)
+  - 20000 MCQs  (training))
+  - 1000 MCQs (validation)
+  - 1000 MCQs (test)
 - Extra data:
-  - 32,000 IslamWeb fatwas
+  - 3165 IslamWeb fatwas
 - Levels: Beginner, Intermediate, Advanced
 
 ### 📚 Subtask 2: General Islamic Knowledge
 
 - Covers a broad spectrum of Islamic knowledge, including theology, jurisprudence, biography, and ethics. The difficulty levels reflect increasing depth and complexity.
 - Dataset:
-  - 1,200 MCQs (200 for validation and 800 for final test)
+  - 1,700 MCQs (700 for validation and 1000 for final test)
 - Extra data:
   - Source: major Islamic classical books. The answers to the multiple-choice questions in the validation and test sets are derived from these books.  
 - Levels: Beginner, Intermediate, Advanced
