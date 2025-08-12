@@ -30,6 +30,7 @@ def process_csv_file(input_file, models_to_evaluate):
         pd.DataFrame: DataFrame with predictions.
     """
     df = pd.read_csv(input_file)
+    df = df.dropna(subset=['question'])
 
     question_type = detect_question_type(df)
     if not question_type:

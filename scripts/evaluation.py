@@ -5,11 +5,28 @@ import shutil
 
 def read_csv_column(filepath, column_name):
     """
-    Read a specific column from a CSV file.
+    Read a specific column from a CSV file, skipping empty or invalid rows.
+
+    Args:
+        filepath (str): Path to the CSV file.
+        column_name (str): Name of the column to extract.
+
+    Returns:
+        list: List of non-empty, stripped values from the specified column.
     """
+    values = []
     with open(filepath, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
-        return [row[column_name].strip() for row in reader if column_name in row]
+        # Verify that the column exists
+        if column_name not in reader.fieldnames:
+            raise ValueError(f"Column '{column_name}' not found in {filepath}")
+        for row in reader:
+            if column_name in row:
+                value = row[column_name]
+                # Skip empty, None, or whitespace-only values
+                if value is not None and value.strip():
+                    values.append(value.strip())
+    return values
 ARABIC_TO_ENGLISH = {
     'أ': 'A',
     'ب': 'B',

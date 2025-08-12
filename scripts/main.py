@@ -9,7 +9,6 @@ from scripts.models import (
     load_documents_and_index,
     get_prediction_mistral,
     get_prediction_fanar,
-    get_prediction_allam,
     get_prediction_gemini,
 )
 
@@ -21,27 +20,26 @@ MODEL_FUNCTIONS: Dict[str, Callable] = {
     "mistral": partial(
         get_prediction_mistral,
         model_version="mistral-saba-24b",
-        top_k=3,
+        top_k=10,
         documents=DOCUMENTS,
         faiss_index=FAISS_INDEX,
+        task_type='knowledge',
     ),
     "fanar_rag": partial(
         get_prediction_fanar,
         model_version="Islamic-RAG",
-        top_k=3,
+        top_k=10,
         documents=DOCUMENTS,
         faiss_index=FAISS_INDEX,
-    ),
-    "allam_7b": partial(
-        get_prediction_allam,
-        model_version="ALLaM-AI/ALLaM-7B-Instruct-preview",
+        task_type='knowledge',
     ),
     "gemini": partial(
         get_prediction_gemini,
-        model_version="gemini-2.5-flash",
-        top_k=6,
+        model_version="gemini-2.0-flash",
+        top_k=10,
         documents=DOCUMENTS,
         faiss_index=FAISS_INDEX,
+        task_type='knowledge'
     ),
 }
 
