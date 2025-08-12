@@ -95,13 +95,9 @@ Fanar LLM (API) — designed for Arabic tasks
 
 Mistral (Groq API) — a  open-weight model, accessed via the free Groq API: https://groq.com/
 
-**ALLAM LLM (Local Inference with GPU)** — Arabic large language model available on Hugging Face.  
-  🔗 Model: [ALLaM-AI/ALLaM-7B-Instruct-preview](https://huggingface.co/ALLaM-AI/ALLaM-7B-Instruct-preview)
-
-  > ⚠ You need a GPU-equipped machine to run this model locally.
+Gemini (API) - accessed via the free Google Gemini API: https://aistudio.google.com/app/apikey
 
 
-We are currently working on adding inference support for an open-source, small-sized Arabic LLM that requires fewer resources. It will be available soon as part of the shared task baseline.
 ### ▶️ How to Run the Code
 #### Configure the Models to Use
 
@@ -111,7 +107,7 @@ We are currently working on adding inference support for an open-source, small-s
 models:
   mistral: "Y"
   fanar_rag: "N"
-  fanar: "Y"
+  gemini: "Y"
 ```
  Customize the Configuration
 
