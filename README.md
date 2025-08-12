@@ -42,16 +42,10 @@ Participants may use prompting, fine-tuning, retrieval-augmented generation (RAG
 ### 1. Clone the repository
 
 ```bash
-git clone https://gitlab.com/islamgpt1/qias_shared_task_2025.git
-cd qias_shared_task_2025
+git clone https://github.com/PuxHocDL/Question-and-Answer-in-Islamic-Studies.git
+cd Question-and-Answer-in-Islamic-Studies
 ```
-### 2. Create a new Conda environment and activate it: (optional)
-1. Download and install MiniConda from [here](https://www.anaconda.com/docs/getting-started/miniconda/main#quick-command-line-install).
-2. Create a new Conda environment and activate it:
-```bash
-conda create -n qias python=3.12
-conda activate qias
-
+### 2. Create a new venv and install requirements
 ```
 ### Install dependencies
 ```bash
