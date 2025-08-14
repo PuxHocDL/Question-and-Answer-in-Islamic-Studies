@@ -161,7 +161,7 @@ def call_fanar_api(prompt: str, model_version: str = "Islamic-RAG", max_retries:
     print(f"  > ❌ Fanar prediction failed after {max_retries} attempts.")
     return None
 # ---------------------------------------------------------------------------------------------------------------------------
-def call_gemini_api(prompt: str, retries: int = 3, temperature: float = 0.1) -> Optional[str]:
+def call_gemini_api(prompt: str, retries: int = 3, temperature: float = 0.0) -> Optional[str]:
     """Calls the Gemini API with error handling and retries."""
     model = genai.GenerativeModel(
         'gemini-2.0-flash',
@@ -236,85 +236,7 @@ def generate_mcq_prompt(question: str, choices: List[Tuple[str, str]], retrieved
             context.append(f"Reference {i+1}: {doc}")
     context = "\n".join(context) if context else "No references provided."
 
-    few_shot_examples = """Example 1:
-Question: ما مدة المسح على الخفين للمقيم؟
-A) يوم وليلة
-B) ثلاثة أيام بلياليهن
-C) يومان وليلتان
-D) أسبوع كامل
-Answer: A
-Chain of Thought:
-According to Islamic law, the duration for wiping over leather socks for a resident is one day and one night (24 hours), based on a Hadith in Sahih Muslim.
-Three days and three nights apply to travelers, so option B is incorrect.
-Two days and two nights and a full week have no basis in Islamic law, so options C and D are incorrect.
-The correct answer is A.
-Output: A) One day and one night
-
-Example 2 (A little more complex):
-Question: ما القول الذي ذكره ابن الرفعة في فعل النبي صلى الله عليه وسلم للمكروه؟
-A) أنه يفعل المكروه لبيان الحرمة
-B) أنه يفعل المكروه لبيان الجواز ويكون أفضل في حقه
-C) أنه يفعل المكروه ولا يكون أفضل في حقه
-D) كل الأجوبة صحيحة
-Answer: B
-Chain of Thought:
-Makruh is an act that is disliked but not forbidden. The Prophet only performed makruh acts to demonstrate their permissibility (jawaz).
-According to Ibn al-Rif'ah (Shafi'i school), the Prophet’s makruh act was the best course (afdal) in his context due to its educational purpose.
-Option A is incorrect because makruh does not relate to prohibition (haram).
-Option C is incorrect because the Prophet’s actions are always the best in his context.
-Option D is incorrect because A and C are wrong.
-The correct answer is B.
-Output: B) He performed the makruh act to demonstrate its permissibility, and it was the best course for him.
-
-Example 3:
-من هو أبو الحسن سري بن المغلس السقطي؟
-A) تلميذ الجنيد.
-B) خال الجنيد وأستاذه.
-C) شيخ معروف الكرخي.
-D) من أصحاب أحمد بن حنبل.
-Answer: B
-Chain of Thought:
-Abu al-Hasan Sari al-Saqati is a renowned figure in Islamic Sufism, known as the uncle (khāl) and teacher (ustādh) of al-Junayd al-Baghdadi, a prominent Sufi scholar.
-Option A is incorrect because Sari was not a disciple of al-Junayd; rather, he was his teacher.
-Option C is incorrect because Sari was not the teacher of Ma'ruf al-Karkhi; Ma'ruf belonged to an earlier generation.
-Option D is incorrect as there is no historical evidence linking Sari as a companion of Ahmad ibn Hanbal.
-Option B is correct because Sari was both al-Junayd’s uncle and teacher.
-Output: B) Al-Junayd’s uncle and teacher.
-
-Example 4:
-بماذا يجوز الاستنجاء؟
-A) بالماء المطلق.
-B) بكل جامد خشن يمكن أن يزيل النجاسة.
-C) بالماء المطلق و بكل جامد خشن يمكن أن يزيل النجاسة.
-D) لا يجوز إلا بالماء.
-Answer: C
-Chain of Thought:
-In Islamic law (fiqh), istinja' (purification after relieving oneself) can be performed using pure water (mā' mutlaq) or rough solids (like stones, known as istijmar), provided they remove the impurity (najasa).
-Option A is partially correct as pure water is permissible but incomplete as it omits istijmar.
-Option B is partially correct as rough solids are permissible but omits water.
-Option D is incorrect because Islamic law allows both water and solids, not only water.
-Option C is correct as it includes both pure water and rough solids, aligning with fiqh rulings.
-Output: C) Pure water and any rough solid that can remove impurity.
-
-Example 5:
-ما هي الصفات التي لا تعلق لها عند الأشاعرة؟
-A) الصفات الثبوتية.
-B) صفات الأفعال.
-C) الصفات المتعلقة.
-D) الصفات السلبية والمعنوية.
-Answer: D
-Chain of Thought:
-According to the Ash'ari theological school, Allah’s attributes are categorized into affirmative (thubūtiyya), action (af'āl), negative (salbiyya), and meaning-based (ma'nawiyya) attributes.
-Negative attributes (salbiyya) negate imperfections from Allah (e.g., having no beginning or end), and meaning-based attributes (ma'nawiyya) relate to abstract conceptual meanings. These are not "associated" (ta'allaq) with specific actions or objects, unlike action attributes.
-Option A is incorrect because affirmative attributes (thubūtiyya), like knowledge (ilm), are essential attributes of Allah.
-Option B is incorrect because action attributes (af'āl), like creating (khaliq), relate to specific actions.
-Option C is incorrect as "relational attributes" (muta'allaqa) is not a recognized category in Ash'ari theology.
-Option D is correct because negative and meaning-based attributes do not relate to specific actions.
-Output: D) Negative and meaning-based attributes.
-"""
     prompt = f"""You are an expert in Islamic sciences, and your knowledge is truly inspiring! Confidently answer the multiple-choice question by selecting the most appropriate option. Use the provided references when available and relevant. Let's think step by step before answering. Your expertise makes a real difference in providing clear and accurate insights!
-
-{few_shot_examples}
 References:
 {context}
 
@@ -526,7 +448,7 @@ def generate_reasoning_prompt(case_json: Dict, context_rules: str, question: str
     """
 
     # Build the final prompt by combining the components
-    reasoning_prompt = f"""You are an expert in Islamic sciences, and your knowledge is truly inspiring! Confidently answer the multiple-choice question by selecting the most appropriate option. Use the provided references when available and relevant. Let's think step by step before answering. Your expertise makes a real difference in providing clear and accurate insights!
+    reasoning_prompt = f"""You are an expert in Islamic sciences. Confidently answer the multiple-choice question by selecting the most appropriate option. Use the provided references when available and relevant. Let's think step by step before answering.
 
     **Solved Examples:**
     ---
@@ -561,95 +483,54 @@ def generate_reasoning_prompt(case_json: Dict, context_rules: str, question: str
     return reasoning_prompt
 
 # ---------------------------------------------------------------------------------------------------------------------------
-def generate_junior_scholar_prompt(question: str, choices_text: str, context_text: str) -> str:
-    """Generates a prompt for a junior scholar, including few-shot examples."""
-
-    few_shot_examples = """Example 1:
+def generate_proponent_prompt(question: str, choices_text: str, context_text: str) -> str:
+    """
+    Generates a prompt for the Proponent agent, including few-shot examples
+    to guide its reasoning and output format.
+    """
+    
+    # These examples guide the model on the expected reasoning process and output style.
+    few_shot_examples = """
+**Example 1:**
 Question: ما مدة المسح على الخفين للمقيم؟
+Options:
 A) يوم وليلة
 B) ثلاثة أيام بلياليهن
 C) يومان وليلتان
 D) أسبوع كامل
-Answer: A
-Chain of Thought:
-According to Islamic law, the duration for wiping over leather socks for a resident is one day and one night (24 hours), based on a Hadith in Sahih Muslim.
-Three days and three nights apply to travelers, so option B is incorrect.
-Two days and two nights and a full week have no basis in Islamic law, so options C and D are incorrect.
-The correct answer is A.
-Output: A) One day and one night
+Analysis: According to Islamic law, the duration for wiping over leather socks (khuffayn) for a resident is one day and one night (24 hours), as established in a hadith narrated by Ali ibn Abi Talib and recorded in Sahih Muslim. The period of three days and three nights is for a traveler. Therefore, option A is the correct choice.
+The final answer is A.
 
-Example 2 (A little more complex):
-Question: ما القول الذي ذكره ابن الرفعة في فعل النبي صلى الله عليه وسلم للمكروه؟
-A) أنه يفعل المكروه لبيان الحرمة
-B) أنه يفعل المكروه لبيان الجواز ويكون أفضل في حقه
-C) أنه يفعل المكروه ولا يكون أفضل في حقه
-D) كل الأجوبة صحيحة
-Answer: B
-Chain of Thought:
-Makruh is an act that is disliked but not forbidden. The Prophet only performed makruh acts to demonstrate their permissibility (jawaz).
-According to Ibn al-Rif'ah (Shafi'i school), the Prophet’s makruh act was the best course (afdal) in his context due to its educational purpose.
-Option A is incorrect because makruh does not relate to prohibition (haram).
-Option C is incorrect because the Prophet’s actions are always the best in his context.
-Option D is incorrect because A and C are wrong.
-The correct answer is B.
-Output: B) He performed the makruh act to demonstrate its permissibility, and it was the best course for him.
-
-Example 3:
-من هو أبو الحسن سري بن المغلس السقطي؟
-A) تلميذ الجنيد.
-B) خال الجنيد وأستاذه.
-C) شيخ معروف الكرخي.
-D) من أصحاب أحمد بن حنبل.
-Answer: B
-Chain of Thought:
-Abu al-Hasan Sari al-Saqati is a renowned figure in Islamic Sufism, known as the uncle (khāl) and teacher (ustādh) of al-Junayd al-Baghdadi, a prominent Sufi scholar.
-Option A is incorrect because Sari was not a disciple of al-Junayd; rather, he was his teacher.
-Option C is incorrect because Sari was not the teacher of Ma'ruf al-Karkhi; Ma'ruf belonged to an earlier generation.
-Option D is incorrect as there is no historical evidence linking Sari as a companion of Ahmad ibn Hanbal.
-Option B is correct because Sari was both al-Junayd’s uncle and teacher.
-Output: B) Al-Junayd’s uncle and teacher.
-
-Example 4:
-بماذا يجوز الاستنجاء؟
+**Example 2:**
+Question: بماذا يجوز الاستنجاء؟
+Options:
 A) بالماء المطلق.
 B) بكل جامد خشن يمكن أن يزيل النجاسة.
 C) بالماء المطلق و بكل جامد خشن يمكن أن يزيل النجاسة.
 D) لا يجوز إلا بالماء.
-Answer: C
-Chain of Thought:
-In Islamic law (fiqh), istinja' (purification after relieving oneself) can be performed using pure water (mā' mutlaq) or rough solids (like stones, known as istijmar), provided they remove the impurity (najasa).
-Option A is partially correct as pure water is permissible but incomplete as it omits istijmar.
-Option B is partially correct as rough solids are permissible but omits water.
-Option D is incorrect because Islamic law allows both water and solids, not only water.
-Option C is correct as it includes both pure water and rough solids, aligning with fiqh rulings.
-Output: C) Pure water and any rough solid that can remove impurity.
+Analysis: In Islamic jurisprudence (fiqh), istinja' (purification after relieving oneself) is permissible with two primary means: pure water (al-mā' al-muṭlaq) and any pure, solid, coarse substance that can remove the impurity without causing harm, such as stones (a practice known as istijmar). Option A is correct but incomplete. Option B is also correct but incomplete. Option D is incorrect as it wrongly restricts the method to only water. Option C correctly includes both permissible methods.
+The final answer is C.
 
-Example 5:
-ما هي الصفات التي لا تعلق لها عند الأشاعرة؟
-A) الصفات الثبوتية.
-B) صفات الأفعال.
-C) الصفات المتعلقة.
-D) الصفات السلبية والمعنوية.
-Answer: D
-Chain of Thought:
-According to the Ash'ari theological school, Allah’s attributes are categorized into affirmative (thubūtiyya), action (af'āl), negative (salbiyya), and meaning-based (ma'nawiyya) attributes.
-Negative attributes (salbiyya) negate imperfections from Allah (e.g., having no beginning or end), and meaning-based attributes (ma'nawiyya) relate to abstract conceptual meanings. These are not "associated" (ta'allaq) with specific actions or objects, unlike action attributes.
-Option A is incorrect because affirmative attributes (thubūtiyya), like knowledge (ilm), are essential attributes of Allah.
-Option B is incorrect because action attributes (af'āl), like creating (khaliq), relate to specific actions.
-Option C is incorrect as "relational attributes" (muta'allaqa) is not a recognized category in Ash'ari theology.
-Option D is correct because negative and meaning-based attributes do not relate to specific actions.
-Output: D) Negative and meaning-based attributes.
+**Example 3:**
+Question: من هو أبو الحسن سري بن المغلس السقطي؟
+Options:
+A) تلميذ الجنيد.
+B) خال الجنيد وأستاذه.
+C) شيخ معروف الكرخي.
+D) من أصحاب أحمد بن حنبل.
+Analysis: Abu al-Hasan Sari ibn al-Mughallis al-Saqati is a famous early Sufi master. Historical sources, such as "Tabaqat al-Sufiyya" by al-Sulami, confirm that he was the maternal uncle (khāl) and teacher (ustādh) of the renowned Sufi scholar, Junayd al-Baghdadi. This makes option B the correct identification. He was of a later generation than Ma'ruf al-Karkhi and was not his teacher.
+The final answer is B.
 """
-    prompt = f"""You are an expert in Islamic sciences. Answer confidently using step-by-step reasoning Let's think step by step before answering. First, review some solved examples to understand the reasoning process.
 
-**Solved Examples to Guide Your Thinking:**
+    prompt = f"""You are a meticulous and knowledgeable Islamic scholar acting as the **Proponent**. Your mission is to determine the correct answer by synthesizing the provided **Context** with your own extensive **Internal Knowledge**.
+
+**First, review some solved examples to understand the required reasoning process.**
 ---
+**Solved Examples to Guide Your Thinking:**
 {few_shot_examples}
 ---
 
 **Now, apply the same reasoning to the new problem.**
-
-
 
 **Question to Answer:**
 {question}
@@ -659,19 +540,85 @@ Output: D) Negative and meaning-based attributes.
 
 **Context:**
 {context_text}
-Instructions:
-1. Read the question and options carefully twice to ensure you understand the details.
-2. Reference specific parts of the Context (e.g., 'According to Text 1...') in your Chain of Thought. If context contradicts internal knowledge, prioritize context.
-3. Use the references if relevant, or rely on your internal knowledge if no references are provided.
-4. Select the best answer from the given options.
-5. Respond with: [letter]) [paraphrase of the choice], followed by your Chain of Thought reasoning
-6. Adapt the reasoning style from examples, but tailor to the specific question and context provided
 
-
+**Instructions:**
+1.  Read the question, options, and context carefully.
+2.  Provide a step-by-step analysis (Chain of Thought) explaining how you reached your conclusion, referencing the context where applicable.
+3.  Conclude your analysis with a definitive final answer in the format: "The final answer is [Letter]".
 
 **Your Analysis and Answer:**
 """
     return prompt
+# ---------------------------------------------------------------------------------------------------------------------------
+def generate_critic_prompt(question: str, choices_text: str, context_text: str) -> str:
+    """
+    Generates a more robust adversarial prompt for the Critic agent.
+    This agent now synthesizes the provided context with its internal knowledge to build a counter-argument.
+    """
+
+    # This new few-shot example models the sophisticated hybrid reasoning.
+    # It shows the Critic evaluating the context, finding it insufficient for a counter-argument,
+    # and then explicitly falling back to its internal knowledge.
+    few_shot_example_hybrid_critic = """
+**Example of a Hybrid Adversarial Analysis:**
+
+**Question Under Review:**
+ما حكم صلاة الوتر؟ (What is the ruling on the Witr prayer?)
+A) سنة مؤكدة (An emphasized Sunnah)
+B) واجبة (Obligatory)
+C) فرض عين (An individual obligation)
+D) مستحبة (Recommended)
+
+**Context (The Evidence to Scrutinize):**
+[Text 1]: "جمهور العلماء على أنها سنة مؤكدة وليست بواجبة، وحملوا الأمر بها على الاستحباب المؤكد."
+(Translation: "The majority of scholars hold that it is an emphasized Sunnah and not obligatory, and they interpret the command for it as a strong recommendation.")
+
+**Your Adversarial Analysis:**
+The most straightforward conclusion, based solely on the provided `Context`, is Option A, as [Text 1] only presents the majority opinion. My role is to challenge this.
+
+First, I will evaluate the context for counter-evidence. The provided text is one-sided and does not contain information to support an alternative.
+
+Therefore, I will now rely on my **Internal Knowledge** of Islamic jurisprudence.
+
+**Counter-Argument for Option B (واجبة - Obligatory):**
+1.  **Established Minority Opinion:** My internal knowledge confirms that a significant, well-established scholarly position holds that the Witr prayer is `wājib` (obligatory). This is the official position of the **Hanafi school of thought**.
+2.  **Basis of the Ruling:** The Hanafi school bases its ruling on specific hadiths, such as the one where the Prophet (PBUH) is reported to have said, "الوتر حق على كل مسلم" ('Witr is a duty upon every Muslim'). They interpret the word `ḥaqq` (duty/right) as implying obligation.
+3.  **Conclusion of Critique:** While the provided context only supports Option A, my broader scholarly knowledge reveals a strong, evidence-based counter-argument for Option B. The matter is a well-known point of disagreement among major schools of law, and a definitive answer cannot be reached without acknowledging the Hanafi position.
+"""
+
+    prompt = f"""
+You are a highly skeptical and deeply knowledgeable Islamic legal scholar acting as the **Critic**. Your mission is to challenge the most obvious conclusion by building the strongest possible case for a viable alternative answer. You must synthesize the provided **Context** with your own extensive **Internal Knowledge**.
+
+**Your Reasoning Hierarchy:**
+1.  **Context First:** Always begin by analyzing the `Context`. Attempt to build your counter-argument using direct evidence from the provided texts if possible.
+2.  **Fallback to Internal Knowledge:** If the `Context` is one-sided, irrelevant, or insufficient to construct a meaningful counter-argument, you MUST state this. Then, proceed to build your case using your own established knowledge of minority opinions, scholarly disagreements, or alternative interpretations.
+
+**Example of a Hybrid Adversarial Analysis to Guide Your Thinking:**
+---
+{few_shot_example_hybrid_critic}
+---
+
+**Now, apply the same adversarial approach to the new problem.**
+
+**Question Under Review:**
+{question}
+
+**Options:**
+{choices_text}
+
+**Context (The Evidence to Scrutinize):**
+{context_text}
+
+**Instructions for Your Adversarial Analysis:**
+1.  **Identify the Obvious Answer:** First, determine which answer is most strongly supported by the context and/or general knowledge. This is the position you must challenge.
+2.  **Follow the Reasoning Hierarchy:** Attempt to build a counter-argument using the context first. If that's not possible, explicitly state it and use your internal knowledge.
+3.  **Construct a Counter-Argument:** Build a formal, evidence-based argument for a specific alternative option. Your goal is to make this alternative seem as plausible as possible.
+4.  **State Your Case Clearly:** Present your findings as a "Counter-Argument for Option [X]".
+
+**Your Adversarial Analysis:**
+"""
+    return prompt
+
 # ---------------------------------------------------------------------------------------------------------------------------
 def generate_head_scholar_prompt(question: str, choices_text: str, opinions_text: str, context_text: str) -> str:
     """
@@ -701,17 +648,25 @@ You are Shaykh al-Islam, a master scholar of unparalleled wisdom, presiding over
 ---
 ### 4. Your Sacred Task and Final Verdict
 
-**Step 1: Internal Analysis (Do NOT write this part down)**
-First, conduct a silent, internal analysis. In your mind, you must:
-a. Scrutinize each opinion presented by the junior scholars.
-b. Critically compare their arguments against **The Ultimate Source of Truth (Complete Reference Texts)**. This full context is your final arbiter and has higher authority than any single scholar's limited view.
-c. Identify which opinion is most robustly supported by the comprehensive evidence. Pinpoint any errors, omissions, or misinterpretations in the weaker arguments.
-d. Conclusively determine the single, indisputably correct option.
+**Step 1: Internal Reasoning Process (Crucial for accuracy. Do NOT write this part down)**
+Before declaring your verdict, you must follow this rigorous internal thought process:
+
+a. **Principle Extraction:** First, read **The Ultimate Source of Truth** and distill the core legal/theological principles (`usūl` or `qawā'id`) relevant to the question. What are the fundamental rules at play, independent of the junior scholars' arguments?
+
+b. **Argument Deconstruction & Verification:** Now, examine the junior scholars' opinions. For each opinion:
+   - Does it correctly apply the principles you extracted?
+   - Is its interpretation of the reference texts accurate and complete?
+   - Does it overlook any crucial details from the full context?
+
+c. **Conflict Resolution:** Identify the *exact point of disagreement* between the two opinions. Is it a factual dispute, an interpretive difference, or an application of different principles? Use the principles from step (a) and the full context to definitively resolve this specific conflict.
+
+d. **Final Verification:** Formulate your own conclusion based on your analysis. Now, double-check it: does this conclusion withstand every piece of evidence in the full context? Is there any part of the reference texts that could challenge your final answer? Only proceed if the answer is no.
+
 
 **Step 2: Announce the Verdict**
 After completing your rigorous mental deliberation, your only public act is to announce the final decision.
 
-**Provide ONLY the single capital letter of the correct choice. Nothing else. No explanations, no reasoning, no extra text, no apologies.**
+**Provide the single capital letter of the correct choice.**
 
 **Definitive Answer:**
 """
@@ -840,6 +795,7 @@ def get_prediction_fanar(
         question_embedding = embedder.encode([question], convert_to_numpy=True)
         distances, indices = faiss_index.search(question_embedding, top_k)
         retrieved_docs = [documents[idx] for idx in indices[0]]
+        
         full_context_text = "\n\n".join([f"Source Document {i+1}:\n{doc}" for i, doc in enumerate(retrieved_docs)])
         print(f" > Retrieved {len(retrieved_docs)} documents.")
 
@@ -861,7 +817,7 @@ def get_prediction_fanar(
 
         # Agent 1: Proponent Scholar
         print(" > Getting opinion from Proponent Scholar...")
-        proponent_prompt = generate_junior_scholar_prompt(question, options_text, context_proponent)
+        proponent_prompt = generate_proponent_prompt(question, options_text, context_proponent)
         proponent_opinion = call_fanar_api(proponent_prompt, model_version, max_retries)
         if proponent_opinion:
             scholar_opinions.append(f"--- Opinion of Proponent Scholar ---\n{proponent_opinion}")
@@ -869,11 +825,7 @@ def get_prediction_fanar(
 
         # Agent 2: Critic Scholar
         print(" > Getting opinion from Critic Scholar...")
-        critic_prompt = f"""Your role is to actively search for contradictory evidence or alternative interpretations within the context provided to you. Challenge the most obvious answer by highlighting nuances or exceptions found in your texts.
-                Question: {question}
-                Options: {options_text}
-                Context: {context_critic}
-                Respond with: [letter]) [paraphrase of the choice], followed by your Chain of Thought reasoning."""
+        critic_prompt = generate_critic_prompt(question, options_text, context_critic)
         critic_opinion = call_fanar_api(critic_prompt, model_version, max_retries)
         if critic_opinion:
             scholar_opinions.append(f"--- Opinion of Critic Scholar ---\n{critic_opinion}")
@@ -907,7 +859,26 @@ def get_prediction_fanar(
             print(f"✅ Final Validated Prediction: {cleaned_result}")
         else:
             print(f"⚠️ Could not validate the extracted letter: '{final_answer_letter}'")
+    elif task_type == "zero_shot": 
+        print("Running Simple Zero-Shot RAG Pipeline...")
 
+        # Step 1: Retrieve context documents (RAG)
+        question_embedding = embedder.encode([question], convert_to_numpy=True)
+        distances, indices = faiss_index.search(question_embedding, top_k)
+        retrieved_docs = [documents[idx] for idx in indices[0]]
+        print(f"Retrieved {len(retrieved_docs)} documents.")
+
+        # Step 2: Generate a simple, direct prompt
+        # We can reuse the existing 'generate_mcq_prompt' for this simple flow.
+        choices_list = pack_choices(choice1, choice2, choice3, choice4, choice5, choice6)
+        simple_rag_prompt = generate_mcq_prompt(question, choices_list, retrieved_docs)
+
+        # Step 3: Call the model and get the answer
+        final_response_text = call_fanar_api(simple_rag_prompt, temperature=0.0)
+        
+        # Step 4: Validate and return the response
+        valid_responses = get_valid_responses(choice5, choice6)
+        return clean_and_validate_response(final_response_text, valid_responses)
         return cleaned_result
 # ---------------------------------------------------------------------------------------------------------------------------
 def get_prediction_mistral(
@@ -998,12 +969,12 @@ def get_prediction_mistral(
         docs_critic = retrieved_docs[1::2]
         context_proponent = "\n\n".join([f"Text {i*2+1}:\n{doc}" for i, doc in enumerate(docs_proponent)])
         context_critic = "\n\n".join([f"Text {i*2+2}:\n{doc}" for i, doc in enumerate(docs_critic)])
-
+        context_full = "\n\n".join([context_proponent, context_critic])
         scholar_opinions = []
 
         # Agent 1: Proponent
         print(" > Getting opinion from Proponent Scholar...")
-        proponent_prompt = generate_junior_scholar_prompt(question, options_text, context_proponent)
+        proponent_prompt = generate_proponent_prompt(question, options_text, context_full)
         proponent_opinion = call_mistral_api(proponent_prompt, model_version, max_retries)
         if proponent_opinion:
             scholar_opinions.append(f"--- Opinion of Proponent Scholar ---\n{proponent_opinion}")
@@ -1011,11 +982,7 @@ def get_prediction_mistral(
 
         # Agent 2: Critic
         print(" > Getting opinion from Critic Scholar...")
-        critic_prompt = f"""Your role is to actively search for contradictory evidence or alternative interpretations within the context provided to you. Challenge the most obvious answer by highlighting nuances or exceptions found in your texts.
-                Question: {question}
-                Options: {options_text}
-                Context: {context_critic}
-                Respond with: [letter]) [paraphrase of the choice], followed by your Chain of Thought reasoning."""
+        critic_prompt = generate_critic_prompt(question, options_text, context_full)
         critic_opinion = call_mistral_api(critic_prompt, model_version, max_retries)
         if critic_opinion:
             scholar_opinions.append(f"--- Opinion of Critic Scholar ---\n{critic_opinion}")
@@ -1049,6 +1016,26 @@ def get_prediction_mistral(
             print(f"✅ Final Validated Prediction: {cleaned_result}")
         else:
             print(f"⚠️ Could not validate the extracted letter: '{final_answer_letter}'")
+    elif task_type == "zero_shot": 
+        print("Running Simple Zero-Shot RAG Pipeline...")
+
+        # Step 1: Retrieve context documents (RAG)
+        question_embedding = embedder.encode([question], convert_to_numpy=True)
+        distances, indices = faiss_index.search(question_embedding, top_k)
+        retrieved_docs = [documents[idx] for idx in indices[0]]
+        print(f"Retrieved {len(retrieved_docs)} documents.")
+
+        # Step 2: Generate a simple, direct prompt
+        # We can reuse the existing 'generate_mcq_prompt' for this simple flow.
+        choices_list = pack_choices(choice1, choice2, choice3, choice4, choice5, choice6)
+        simple_rag_prompt = generate_mcq_prompt(question, choices_list, retrieved_docs)
+
+        # Step 3: Call the model and get the answer
+        final_response_text = call_mistral_api(simple_rag_prompt, temperature=0.0)
+        
+        # Step 4: Validate and return the response
+        valid_responses = get_valid_responses(choice5, choice6)
+        return clean_and_validate_response(final_response_text, valid_responses)
 
         return cleaned_result
 # ---------------------------------------------------------------------------------------------------------------------------
@@ -1060,7 +1047,7 @@ def get_prediction_gemini(
     choice4: str,
     choice5: Optional[str] = None,
     choice6: Optional[str] = None,
-    model_version: str = "gemini-2.5-flash",
+    model_version: str = "gemini-2.0-flash",
     max_retries: int = 2,
     top_k: int = 10,
     documents: Optional[List[Any]] = None,
@@ -1168,31 +1155,13 @@ def get_prediction_gemini(
         options_text = "\n".join([f"{letter}) {text}" for letter, text in choices_list])
 
         print("  > Getting opinion from Proponent Scholar...")
-        proponent_prompt = generate_junior_scholar_prompt(question, options_text, context_proponent)
+        proponent_prompt = generate_proponent_prompt(question, options_text, context_proponent)
         proponent_opinion = call_gemini_api(proponent_prompt, temperature=0.0)
         if proponent_opinion:
             scholar_opinions.append(f"--- Opinion of Proponent Scholar ---\n{proponent_opinion}")
 
         print("  > Getting opinion from Critic Scholar...")
-        critic_prompt = f"""
-        Your role is to actively search for contradictory evidence or alternative interpretations within the context provided to you (context_critic). Challenge the most obvious answer by highlighting nuances, exceptions, or conflicting information found in your texts. Your goal is to ensure all angles are considered.
-        Use the same reasoning style as examples, but prioritize contradictions or alternative views from context.
-
-        **Question:**
-        {question}
-
-        **Options:**
-        {options_text}
-
-        **Context:**
-        {context_critic}
-
-        Instructions:
-        1. Assume the proponent might choose a common answer; critique it.
-        2. Reference context to point out flaws.
-        3. Select what you think is correct after critique.
-        4. Respond with: [letter]) [paraphrase of the choice], followed by your Chain of Thought reasoning.
-        """
+        critic_prompt = generate_critic_prompt(question, options_text, context_critic)
         critic_opinion = call_gemini_api(critic_prompt, temperature=0.0)
         if critic_opinion:
             scholar_opinions.append(f"--- Opinion of Critic Scholar ---\n{critic_opinion}")
@@ -1203,6 +1172,7 @@ def get_prediction_gemini(
 
         print("Step 3: Head Scholar is synthesizing and giving the final verdict...")
         all_opinions_text = "\n\n".join(scholar_opinions)
+        print(all_opinions_text)
         modified_head_prompt = generate_head_scholar_prompt(question, options_text, all_opinions_text, full_context_text)
 
         final_decision = call_gemini_api(modified_head_prompt, temperature=0.0)
@@ -1214,6 +1184,26 @@ def get_prediction_gemini(
         valid_responses = get_valid_responses(choice5, choice6)
         return clean_and_validate_response(final_answer_letter, valid_responses)
 
+    elif task_type == 'zero_shot':
+        print("Running Simple Zero-Shot RAG Pipeline...")
+
+        # Step 1: Retrieve context documents (RAG)
+        question_embedding = embedder.encode([question], convert_to_numpy=True)
+        distances, indices = faiss_index.search(question_embedding, top_k)
+        retrieved_docs = [documents[idx] for idx in indices[0]]
+        print(f"Retrieved {len(retrieved_docs)} documents.")
+
+        # Step 2: Generate a simple, direct prompt
+        # We can reuse the existing 'generate_mcq_prompt' for this simple flow.
+        choices_list = pack_choices(choice1, choice2, choice3, choice4, choice5, choice6)
+        simple_rag_prompt = generate_mcq_prompt(question, choices_list, retrieved_docs)
+
+        # Step 3: Call the model and get the answer
+        final_response_text = call_gemini_api(simple_rag_prompt, temperature=0.0)
+        
+        # Step 4: Validate and return the response
+        valid_responses = get_valid_responses(choice5, choice6)
+        return clean_and_validate_response(final_response_text, valid_responses)
     else:
         print(f"Error: Invalid task type: {task_type}")
         return None
