@@ -40,7 +40,7 @@ print("Initializing SentenceTransformer model...")
 embedder = SentenceTransformer('BAAI/bge-m3', device='cpu')
 print("SentenceTransformer model initialized.")
 # ---------------------------------------------------------------------------------------------------------------------------
-def load_documents_and_index(index_path: str = "../islamic_index.bin", doc_path: str = "../islamic_chunks.pkl") -> Tuple[List[Any], Optional[faiss.Index]]:
+def load_documents_and_index(index_path: str = "../fatwa_index.bin", doc_path: str = "../fatwa_documents.txt") -> Tuple[List[Any], Optional[faiss.Index]]:
     """
     Load documents from either .txt or .pkl file and FAISS index.
     """
@@ -164,7 +164,7 @@ def call_fanar_api(prompt: str, model_version: str = "Islamic-RAG", max_retries:
 def call_gemini_api(prompt: str, retries: int = 3, temperature: float = 0.0) -> Optional[str]:
     """Calls the Gemini API with error handling and retries."""
     model = genai.GenerativeModel(
-        'gemini-2.0-flash',
+        'gemini-2.5-flash',
         generation_config={"temperature": temperature, "max_output_tokens": 30000},
         safety_settings=[
             {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
@@ -474,7 +474,7 @@ def generate_reasoning_prompt(case_json: Dict, context_rules: str, question: str
     1. Read the question and options carefully twice to ensure you understand the details.
     2. Use the references if relevant, or rely on your internal knowledge if no references are provided.
     3. Select the best answer from the given options.
-    4. Respond with only one letter (A, B, C, D, E, or F).
+    4. Respond with one letter (A, B, C, D, E, or F) and your reasoning for your answer!.
 
 
     **Final Answer:**"""
@@ -783,9 +783,11 @@ def get_prediction_fanar(
         context_rules = "\n\n".join([f"Rule Reference {i+1}:\n{rule}" for i, rule in enumerate(retrieved_rules)])
         reasoning_prompt = generate_reasoning_prompt(case_json, context_rules, question, options_text)
         final_response_text = call_fanar_api(reasoning_prompt, model_version, max_retries)
+        final_answer_letter = call_mistral_api(generate_extractor_prompt(final_response_text), model_version, max_retries=1)
+
         valid_responses = get_valid_responses(choice5, choice6)
-        return clean_and_validate_response(final_response_text, valid_responses)
-    
+        return clean_and_validate_response(final_answer_letter, valid_responses)
+
     # =================================================================================
     # == PIPELINE FOR TASK 2: GENERAL KNOWLEDGE
     # =================================================================================
@@ -942,8 +944,10 @@ def get_prediction_mistral(
         context_rules = "\n\n".join([f"Rule Reference {i+1}:\n{rule}" for i, rule in enumerate(retrieved_rules)])
         reasoning_prompt = generate_reasoning_prompt(case_json, context_rules, question, options_text)
         final_response_text = call_mistral_api(reasoning_prompt, model_version, max_retries)
+        final_answer_letter = call_mistral_api(generate_extractor_prompt(final_response_text), model_version, max_retries=1)
         valid_responses = get_valid_responses(choice5, choice6)
-        return clean_and_validate_response(final_response_text, valid_responses)
+
+        return clean_and_validate_response(final_answer_letter, valid_responses)
     
     # =================================================================================
     # == PIPELINE FOR TASK 2: GENERAL KNOWLEDGE
@@ -1037,7 +1041,6 @@ def get_prediction_mistral(
         valid_responses = get_valid_responses(choice5, choice6)
         return clean_and_validate_response(final_response_text, valid_responses)
 
-        return cleaned_result
 # ---------------------------------------------------------------------------------------------------------------------------
 def get_prediction_gemini(
     question: str,
@@ -1114,8 +1117,11 @@ def get_prediction_gemini(
         context_rules = "\n\n".join([f"Rule Reference {i+1}:\n{rule}" for i, rule in enumerate(retrieved_rules)])
         valid_responses = get_valid_responses(choice5, choice6)
         reasoning_prompt = generate_reasoning_prompt(case_json, context_rules, question, options_text)
-        final_response_text = call_gemini_api(reasoning_prompt, temperature=0.1)
-        return clean_and_validate_response(final_response_text, valid_responses)
+        print("---------------------------------------------------------------------------------")
+        final_response_text = call_gemini_api(reasoning_prompt, temperature=0.0)
+        final_answer_letter = call_gemini_api(generate_extractor_prompt(final_response_text), temperature=0.0)
+        print(final_response_text)
+        return clean_and_validate_response(final_answer_letter, valid_responses)
 
     # =================================================================================
     # == PIPELINE FOR TASK 2: GENERAL KNOWLEDGE
